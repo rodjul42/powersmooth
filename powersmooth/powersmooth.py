@@ -56,7 +56,7 @@ def smooth(vec,order,weight):
     A = A0 + weight * A1
     A = ( A + A.T )
     b = 2 * vec
-    return 2*A,linalg.spsolve(A,b)
+    return linalg.spsolve(A,b)
 
 
 class multi_smooth:
