@@ -3,7 +3,12 @@ from scipy.sparse import linalg
 import numpy as np
 import collections
 
-def construct_fast(order,n):
+def construct_matrix(order,n):
+    '''
+    Create a sparse matrix with dimension (n x n) for the given order
+    order : select the order of the derivative to use for smoothing
+    n     : dimension of the matrix
+    '''
     if order == 0:
         diag = np.ones(n)*2
         diag[0]  = 1
@@ -36,11 +41,18 @@ def construct_fast(order,n):
     return sparse.csc_matrix(A1)
 
 def smooth(vec,order,weight):
+    '''
+    Use the selected derivative to smooth the input vector vec
+    vec   : input vector 
+    order : select the order of the derivative to use for smoothing
+    weight: select the strenght of the smoothing 
+    returns smoothed vector
+    '''
     n = len(vec)
     vec = np.array(vec)
     
     A0 = sparse.csc_matrix(sparse.eye(n))
-    A1 = construct_fast(order,n)
+    A1 = construct_matrix(order,n)
     A = A0 + weight * A1
     A = ( A + A.T )
     b = 2 * vec
@@ -48,8 +60,17 @@ def smooth(vec,order,weight):
 
 
 class multi_smooth:
+    '''
+
+    The classs multi_smooth saves the sparse matrix. 
+    Usfull if many vectors with the same paramters are processed
+    '''
     def __init__(self, N, orders, weights):
-        
+        '''
+        N     : lenght of the vectors to smoooth
+        order : select the order of the derivative to use for smoothing
+        weight: select the strenght of the smoothing 
+        '''
         if not isinstance(orders, (collections.Sequence, np.ndarray)):
             orders = [orders]
         if not isinstance(weights, (collections.Sequence, np.ndarray)):        
@@ -57,10 +78,14 @@ class multi_smooth:
         
         A0 = sparse.csc_matrix(sparse.eye(N))    
         for order,weight in zip(orders,weights):
-            A0 += weight * construct_fast(order,N)
+            A0 += weight * construct_matrix(order,N)
         self.A = ( A0 + A0.T )
     
     def __call__(self,vec):
+        '''
+        vec   : input vector 
+        returns smoothed vector
+        '''
         b = 2 * vec
         return linalg.spsolve(self.A,b)
 
