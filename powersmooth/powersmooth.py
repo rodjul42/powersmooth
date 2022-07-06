@@ -75,9 +75,9 @@ class multi_smooth:
         order : select the order of the derivative to use for smoothing
         weight: select the strenght of the smoothing 
         '''
-        if not isinstance(orders, (collections.Sequence, np.ndarray)):
+        if not isinstance(orders, (Sequence, np.ndarray)):
             orders = [orders]
-        if not isinstance(weights, (collections.Sequence, np.ndarray)):        
+        if not isinstance(weights, (Sequence, np.ndarray)):        
             weights = [weights]*len(orders)
         
         A0 = sparse.csc_matrix(sparse.eye(N))    
