@@ -1,7 +1,11 @@
 from scipy import sparse
 from scipy.sparse import linalg
 import numpy as np
-import collections
+import sys
+if sys.version_info < (3, 6):
+    from collections import Sequence
+else:
+    from collections.abc import Sequence
 
 def construct_matrix(order,n):
     '''
